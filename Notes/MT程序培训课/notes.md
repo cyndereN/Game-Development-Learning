@@ -280,6 +280,31 @@ void Update()
 
 Nanite + Lumen + Niagara + Chaos ...
 
+
+## 基础知识
+
+- GameMode
+
+This is the overall game manager and controls different GameStates. It is only on the server, and so should control the actual flow of the game, like spawning in a player or an AI. You could have multiple GameStates here that you cycle through, such as a BeforeGameState, an InGameState and an AfterGameState.
+
+
+- GameState
+This is used to hold variables about the current game mode like the time elapsed so far or which team is winning. On client and server.
+
+- PlayerController
+Interface between pawn and player.
+This is used to receive inputs and then tell whatever Pawn it is controlling to do something with that input. Like the controller could listen out for the W key and then tell the character it is controlling to do something with that W input. This is because your controller can possess multiple pawns within a single game (not at the same time), and so each character might want to do different things based on that W key input. It can do other stuff as well as listen for inputs, but for example's sake I'm keeping it simple.
+
+- PlayerCharacter
+The actual player themselves. This has things like the skeletal mesh and receives input from a controller.
+
+- PlayerState
+Used to keep track of variables about the player such as name or ID
+
+
+- GameInstance
+Used to store stuff that should persist between levels.
+
 ---
 ---
 # 设计模式
