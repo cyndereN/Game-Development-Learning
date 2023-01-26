@@ -284,7 +284,6 @@ Nanite + Lumen + Niagara + Chaos ...
 ## 基础知识
 
 - GameMode
-
 This is the overall game manager and controls different GameStates. It is only on the server, and so should control the actual flow of the game, like spawning in a player or an AI. You could have multiple GameStates here that you cycle through, such as a BeforeGameState, an InGameState and an AfterGameState.
 
 
