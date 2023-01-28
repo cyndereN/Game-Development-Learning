@@ -1,0 +1,18 @@
+{
+	"source": "UE",
+	"applications": [
+		{
+			"app_key": "application.generated.ue.third-person-bp-game-template-10757647.ue4editor.exe",
+			"launch_type": "url",
+			"url": "steam://launch/",
+			"action_manifest_path": "D:/360MoveData/Users/nirvash/Desktop/MultiPlayer/Config/SteamVRBindings/steamvr_manifest.json",
+			"strings":
+			{
+				"en_us":
+				{
+					"name": "Third Person BP Game Template-10757647 [UE Editor]"
+				}
+			}
+		}
+	]
+}
