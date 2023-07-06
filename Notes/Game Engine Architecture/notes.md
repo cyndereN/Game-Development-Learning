@@ -1,4 +1,4 @@
-# 第一章 导论
+# 第1章 导论
 
 ## 1.1 典型游戏团队结构
 
@@ -66,13 +66,13 @@ assertion，内存分配，数学库等
 
 ### 1.7.3 世界编辑器，资源数据库
 
-# 第二章 专业工具
+# 第2章 专业工具
 
-# 第三章 游戏软件工程师基础
+# 第3章 游戏软件工程师基础
 
-# 第四章 游戏所需的三维数学
+# 第4章 游戏所需的三维数学
 
-# 第五章 游戏支持系统
+# 第5章 游戏支持系统
 
 ## 5.1 子系统的启动和终止
 
@@ -175,11 +175,193 @@ StringId internString(const char* str)
 
 ## 5.5 引擎配置
 
-# 第六章 资源及文件系统
+# 第6章 资源及文件系统
 
 处理资源间的交叉引用：
 1. 使用全局统一标识符做交叉引用
 2. 指针修正表
 3. 存储C++对象为二进制映像：构造函数
 
-# 第七章 游戏循环及实时模拟
+# 第7章 游戏循环及实时模拟
+
+## 7.1 渲染循环
+
+Rectangle Invalidation, 仅重绘屏幕中有改动的内容
+
+```
+while(!quit){
+    updateCamera();
+    updateSceneElements();
+
+    // 把静止的场景渲染到屏幕外的帧缓冲
+    renderScene();
+
+    // 交换背景缓冲和前景缓冲
+    swapBuffers();
+}
+```
+
+## 7.2 游戏循环
+
+## 7.3 游戏循环的架构风格
+
+消息泵，回调驱动，基于事件的
+
+## 7.4 抽象时间线
+
+## 7.5 测量及处理时间
+
+30 FPS: delta time = 33.3ms
+
+60 FPS: delta time = 16.6ms
+
+毫秒是游戏中常用的时间单位
+
+游戏有时候会用上一帧的delta t估计下一帧，会造成不好的效果。帧率调控可以减少误差
+
+在Unity中，Update和FixedUpdate是两个常用的游戏循环函数，它们之间有以下区别：
+
+调用频率：Update函数在每一帧渲染之前被调用，因此其调用频率是不确定的，取决于每秒帧数（FPS）。而FixedUpdate函数是在固定时间间隔内调用，通常是每秒固定调用几次。默认情况下，FixedUpdate每秒调用次数为50次，但可以通过修改Time.fixedDeltaTime来改变。
+
+时间间隔：Update函数的时间间隔是可变的，根据帧率的变化而变化。而FixedUpdate函数的时间间隔是固定的，不受帧率的影响，因此在物理模拟等需要固定时间间隔的情况下更加可靠。
+
+适用场景：Update函数适用于处理与用户输入、游戏逻辑和动画相关的操作。因为其调用频率不固定，所以适合处理相对较轻量级的操作。而FixedUpdate函数适用于处理物理模拟、刚体运动和碰撞检测等需要固定时间间隔的操作。由于其时间间隔固定，所以适合处理较重量级的操作。
+
+需要注意的是，由于物理引擎在FixedUpdate中运行，所以涉及刚体和碰撞的代码最好放在FixedUpdate中，以确保物理模拟的准确性。而其他游戏逻辑和动画相关的代码可以放在Update中。
+
+综上所述，Update和FixedUpdate函数在调用频率、时间间隔和适用场景上有所区别，开发者应根据具体的需求和功能选择合适的函数来编写代码。
+
+总结来说，按照一定时间间隔更新游戏适用于较简单的、不需要实时响应的游戏类型，而帧间隔更新适用于对实时性要求更高的游戏类型。
+
+## 7.6 多处理器的游戏循环
+
+比如
+
+```cpp
+
+RayCastResult result;
+requestRayCast(playerPos, enemyPos, &result);
+
+// 当等待其他核做光线投射时，做其他无关的工作
+
+// 不能做更多了，等待光线投射作业的结果
+
+waitForRayCastResuilts(&result);
+
+//处理结果
+if(result.hitSth() && isEnemy(r.getHitObject()))
+{
+    // ...
+}
+
+```
+
+有时也加入bool rayJobPending以等待上一帧光线投射结果
+
+
+## 7.7 网络多人游戏循环
+
+# 第8章 人体学接口设备
+
+## 8.1 各种人体学接口设备
+
+## 8.2 人体学接口设备的接口技术
+
+轮询，中断
+
+## 8.3 输入类型
+
+## 8.4 输出类型
+
+## 8.5 游戏引擎的人体学接口设备系统
+
+迅速连续按按钮
+```cpp
+class ButtonTapDetector{
+    U32 m_buttonMask; // 需要检测的按钮（位掩码）
+    F32 m_dtMax; // 按下事件之间的最长允许时间
+    F32 m_tLast; // 最后按下按钮的事件，以s为单位
+
+public:
+    ButtonTapDetector(U32 buttonMask, F32 dtMax)
+        : m_buttonMask(1U<<buttonMask)
+        , m_dtMax(dtMax)
+        , m_tLast(CurrentTime()-dtMax) // 开始时是无效的
+    {}
+
+    bool isGestureValid(U32 buttonMask, F32 dtMax)
+    {
+        F32 t = CurrentTime();
+        F32 dt = t-m_tLast;
+        return (dt < m_dtMax);
+    }
+
+    void Update(){
+        if(ButtonJustWentDown(m_buttonMask)){
+            m_tLast = CurrentTime();
+        }
+    }
+};
+
+```
+
+多按钮序列
+
+```cpp
+class ButtonSequenceDetector{
+    U32* m_aButtonIds; // 检测的序列
+    U32 m_ButtonCount;  // 序列中的按钮数
+    F32 m_dtMax; // 按下事件之间的最长允许时间
+    EventId m_eventId; // 检测到序列时发送的事件
+    U32 m_iButton; // 要检测的下一个按钮
+    F32 m_tStart; // 序列开始时间，以s为单位
+public:
+    // 构建一个对象，用于检测指定的按钮序列
+    // 当成功检测到序列时，就会广播指定事件，令整个游戏能适当回应事件
+
+    ButtonSequenceDetectir(U32* aButtonIds, U32 buttonCount, F32 dtMax, EventId eventIdToSend)
+        : m_aButtonIds(aButtonIds)
+        , m_nButtonCount(buttonCount)
+        , m_dtMax(dtMax)
+        , m_eventId(eventIdToSend)
+        , m_iButton(0)
+        , m_tStart(0) // 开始时是无效的
+    {}
+
+    void Update(){
+        ASSERT(m_iButton < m_nButtonCount);
+
+        // 计算下一个预期的按钮，以位掩码表示
+        U32 buttonMask = (1U << m_aButtonIds[m_iButton]);
+
+        if (ButtonJustWentDown(~buttonMask)){
+            m_iButton = 0; // 重置序列
+        }
+        else if (ButtonJustWentDown(buttonMask)){
+            if(m_iButton == 0){
+                m_tStart = CurrentTime();
+                m_iButton++;
+            }
+        
+            else{
+                F32 dt = CurrentTime() - m_tStart;
+
+                if(dt<m_dtMax){
+                    // 序列仍然有效
+                    m_iButton++;
+
+                    if(m_iButton == m_nButtonCount){
+                        // 序列已完成
+                        BroadcastEvent(m_eventId);
+                        m_iButton = 0;
+                    }
+                }
+                else{
+                    // 对不起，按的不够快
+                    m_iButton = 0;
+                }
+            }
+        }
+    }
+};
+```
