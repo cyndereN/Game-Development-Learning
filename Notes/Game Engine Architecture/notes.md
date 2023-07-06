@@ -66,3 +66,120 @@ assertion，内存分配，数学库等
 
 ### 1.7.3 世界编辑器，资源数据库
 
+# 第二章 专业工具
+
+# 第三章 游戏软件工程师基础
+
+# 第四章 游戏所需的三维数学
+
+# 第五章 游戏支持系统
+
+## 5.1 子系统的启动和终止
+
+### 5.1.1 C++ 静态初始化次序（是不可用的）
+
+在函数内声明的静态变量不会在main()之前构建。把全局单例改为静态变量就可控制全局单例的构建次序
+
+```cpp
+class RenderManager{
+public:
+    // 取得唯一实例
+    static RenderMannager& get()
+    {
+        // 此函数中的静态变量将于函数被首次调用时构建
+        static RenderManager sSingleton;
+        return sSingleton;
+    }
+
+    RenderManager()
+    {
+        VideoManager::get();
+        TextureManager::get();
+        // ...
+    }
+
+    ~RenderManager()
+    {
+        // 终止管理器
+    }
+
+};
+```
+
+变种：
+```cpp
+static RenderManager& get()
+{
+    static RenderManager* gpSingleton = NULL;
+    if(gpSingleton == NULL)
+        gpSingleton = new RenderManager;
+    ASSERT(gpSingleton);
+    returnm *gpSingleton;
+}
+```
+
+但此方法不可控制析构次序，且难以预计单例确切构建时间
+
+最简单的“蛮力”方法就是，明确定义启动和终止函数，而构造和析构函数完全不做任何事，这样我们可以在main()中按需明确次序调用
+
+## 5.2 内存管理
+
+以malloc或者new进行内存分配是非常慢的操作，要尽量避免动态内存分配，不然也可利用自制的内存分配器降低分配成本
+
+把数据置于细小的连续内存块更高效
+
+### 5.2.1 优化内存分配
+
+用malloc或者new很慢的原因：
+1. 大量管理开销
+2. 从user mode切换到kernel mode的context-switch浪费时间
+
+### 5.2.2 内存碎片
+
+以堆栈和池分配器避免内存碎片
+
+## 5.3 容器
+
+p++后置递增不造成数据依赖，而++p会，且可能造成流水线停顿（stall）
+
+## 5.4 字符串
+
+提前对字符串扣留一次并把结果储存备用更好
+
+```cpp
+static StringId sid_foo = internString("foo");
+
+// stringid.h
+
+typedef U32 StringId;
+extern StringId internString(const char* str);
+
+// stringid.cpp
+static HashTable<StringId, const char*> gStringIdTable;
+
+StringId internString(const char* str)
+{
+    StringId sid = hasCrc32(str);
+    HashTable<StringId, const char*>::iterator it = gStringIdTable.find(sid);
+
+    if (it == gStringTable.end())
+    {
+        // 加入表
+        // 记得要复制，以防原来的字符串是动态分配的并将被释放
+        gStringTable[sid] = strdup(str);
+    }
+
+    return sid;
+}
+```
+
+## 5.5 引擎配置
+
+# 第六章 资源及文件系统
+
+处理资源间的交叉引用：
+1. 使用全局统一标识符做交叉引用
+2. 指针修正表
+3. 存储C++对象为二进制映像：构造函数
+
+# 第七章 游戏循环及实时模拟
