@@ -91,3 +91,7 @@ https://www.youtube.com/watch?v=fdAOPHgW7qM&ab_channel=JonathanBlow
 - Update()和FixUpdate()
 
     https://blog.csdn.net/Marine_snow/article/details/117127889
+
+    http://blog.lidia-martinez.com/fixedupdate-fixedtimestep-maximum-allowed-timestep-unity#mcetoc_1eq0n8620d
+
+    https://juejin.cn/post/7008502979624091685
