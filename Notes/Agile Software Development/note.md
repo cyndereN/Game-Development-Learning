@@ -54,12 +54,52 @@ LSP是使OCP成为可能的主要原则之一。
 
 # 3 设计模式
 # 3.1 command模式
+
+仅由一个具有唯一方法的接口组成
+
 # 3.2 active object模式
-# 3.3 template methon模式
+# 3.3 template method模式
 # 3.4 strategy模式
+
+不是将通用算法放到抽象基类中，而是一个叫ApplicationRunner的具体类
+
+所以比template method更遵循DIP
+
 # 3.5 facade模式
 # 3.6 mediactor模式
 # 3.7 singleton模式
+
+使用私有构造函数，一个静态变量以及一个静态方法
+
 # 3.8 monostate模式
+
+把所有变量变成静态的
+
 # 3.9 null object模式
 # 3.10 factory模式
+# 3.11 composite模式
+
+# 3.12 observer模式
+
+# 3.13 abstract server模式
+
+switch和light之间由switchable接口，满足DIP和OCP
+
+# 3.14 adapter模式
+
+但其违反SRP，把light和switchable绑定了。用light adapter从switchable派生，并委托给light。
+
+但是会付出实例化适配器、绑定和委托的时间空间代价
+
+# 3.15 bridge模式
+
+# 3.16 proxy模式
+
+# 3.17 stairway to heaven模式
+
+# 3.18 visitor模式
+
+允许在不更改现有类层次结构的情况下向其中增加新方法
+
+# 3.19 state模式
+
