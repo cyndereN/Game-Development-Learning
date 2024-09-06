@@ -92,7 +92,7 @@
 			Three,
 		};
 		{
-			//ͨ��ö�����͵������ҵ���Ӧö�����͵�COD class object defalut
+			//通过枚举类型的名字找到对应枚举类型的COD class default
 			const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETempEnum"), true);
 			if (EnumPtr)
 			{
@@ -101,7 +101,7 @@
 		}
 		//字符串转枚举
 		{	
-			//ͨ��ö�����͵������ҵ���Ӧö�����͵�COD class object defalut
+			//通过枚举类型的名字找到对应枚举类型的COD class default
 			const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETempEnum"), true);
 			if (EnumPtr)
 			{
