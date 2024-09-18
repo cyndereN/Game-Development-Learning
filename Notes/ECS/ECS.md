@@ -120,6 +120,10 @@ Entity 由 Component 组成，Component 之中只有数据，没有方法;而 Sy
 - 「容易预测和回滚」
 ECS的初衷就是为解决预测和回滚的，因为数据和状态都存储在Component（组件）里面，因此记录关键帧的数据和状态非常方便，这就使得实现预测和回滚容易许多；
 
+- Optimize memory access
+- Isolate data based on usage
+- Virtual calls are nice but slow(so use EC/ECS)
+- Execute functions on a big data set at a time
 
 ### 对于特定Mactch 3
 - 高效的程序开发维护。解耦。调用栈比较浅。
