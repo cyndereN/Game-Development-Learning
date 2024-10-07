@@ -6,7 +6,7 @@ AGameMode 是 AGameModeBase 的子类，拥有一些额外的功能支持多人�
 所有新建项目默认使用 AGameModeBase。
 如果需要此额外行为，可切换到从 AGameMode 进行继承。如从 AGameMode 进行继承，也可从 AGameState 继承游戏状态（其支持比赛状态机）。
 
-##Game Mode 蓝图
+## Game Mode 蓝图
 
 可创建派生自 Game Mode 类的蓝图，并将它们用作项目或关卡的默认 Game Mode。
 派生自 Game Mode 的蓝图可进行以下默认设置：
