@@ -183,3 +183,115 @@ OpenWrite 打开一个文件进行写入
 ### 7.8 编译器相关技巧
 
 ## 8 模块机制
+
+### 8.1 模块基础
+
+UE5最小的代码组织单位是模块。每一个模块会有一个*.Build.cs 文件来描述模块主要结构，源码部分会有Public和Private两个文件夹
+
+Runtime主要负责一些游戏的Gameplay等基础模块，在打出的游戏包体与编辑器都会用到这些模块。
+
+Developer主要是一些跨平台相关代码以及一些与游戏无关的底层代码，同样，游戏包和编辑器都会用到。
+
+Editor主要是一些编辑器相关代码，只有编辑器用到，打出给玩家的游戏包体是不会包含这些代码的。
+
+Plugin主要是一些插件相关，给引擎提供了一些额外的扩展功能，并不是编辑器所必须包含的。
+
+### 8.2 模块初始化
+
+总体上说，模块的加载遵循这样的顺序：
+
+1. 首先加载的是Platform File Module，因为虚幻引擎要读取文件。
+2. 接下来加载的是核心模块：
+(FEngineLoop::PreInit→LoadCoreModules)。
+3. 加载CoreUObject。
+4. 然后在初始化引擎之前加载模块：
+FEngineLoop::LoadPreInitModules。
+5. 加载Engine。
+6. 加载Renderer。
+7. 加载AnimGraphRuntime。
+
+### 8.3 模块总结
+
+我们可以看到UnrealEngine的Visual Studio解决方案里，主要有 引擎主体的工程UE5，其中UE5里面有一个Plugins目录，即为引擎插件，插件其实是一起编译在引擎里面的，然后还有一个Programs目录，会编译很多个独立程序出来，这些独立程序可以脱离引擎独立运行，主要是执行一些类似Pak打包，引擎后台服务，编译Shader等独立exe程序
+
+我们会通过UnrealEngine生成一个自己的游戏项目，比如名字为MyGame，然后我们通过MyGame.uproject可以生成一个MyGame.sln的visual studio解决方案，这里的结构更为简单:
+Engine(引擎引用)、Game、Plugins、Config
+
+#### 8.3.1 `*.Target.cs`文件概述
+这个*.Target.cs是用来描述如何生成一个可执行exe的，包括这个exe的类型，它的链接方式，以及各种编译选项，编译宏定义等
+
+Type参数分为  Program，Editor，Game，server，client
+
+前三种 Program，Editor，Game用得比较多，我们来重点介绍一下：
+
+首先，Program是独立程序，就是类似 UnrealPak.exe等，可以脱离UnrealEngine环境也能独立运行的exe，主要是作为处理单一功能的可执行文件。比如UnrealPak主要为了把 指定列表的所有*.uasset资源，打包成一个*.pak包。
+
+Editor是附带UE5编辑器的程序，我们日常开发游戏MyGame时，需要在UE5编辑器里面查看各种美术资源，修改关卡和角色蓝图等，然后可以点击运行按钮，来查看游戏内效果，用的资源就是美术提交的散装的原始资源uasset，有时候进入场景有点卡顿，因为需要运行时编译shader，压缩贴图等，为了方便我们在开发时修改资源等。所以我们有一个MyGameEditor.Target.cs来生成这个附带UE5编辑器的MyGame项目。
+
+最后，Game是发布给玩家的游戏包体的程序，比如我们的MyGame开发好了，我们会打一个MyGame的游戏包体给玩家玩，这个游戏里面没有编辑器，用的资源也是cook好并打好pak包的二进制资源，因此进入场景会非常流畅，较大得改善了玩家的游戏体验。所以我们有一个MyGame.Target.cs来生成这个不带UE5编辑器的MyGame
+
+LinkType主要是：Modular 和 Monolithic 两个值。如果不定义这个参数，默认为Modular：每个模块一个dll，例如UnrealPak。Monolithic：所有文件编进一个exe，如BlankProgram。
+
+
+#### 8.3.2 `*.Target.cs`文件 vs `*.Build.cs` 文件
+
+它们同样作为给UBT处理的描述文件，也是有不同的地方的，首先*.Target.cs文件是每个要编译成一个比较独立的程序的目标需要一个，而*.Build.cs更广泛，每个模块都有一个。另外，*.Target.cs 主要描述链接信息，编译选项，一些预定义宏等。而*.Build.cs文件 主要描述它需要包含哪些头文件目录，需要依赖哪些模块等。
+
+### 8.4 UBT UHT 
+
+*UBT*全称为 UnrealBuildTool ，意思是虚幻引擎的构建工具，它主要负责分析build.cs和Target.cs等配置文件，并把虚幻的*.h和*.cpp文件编译并链接为二进制可执行文件exe/dll。
+
+*UHT*全称为 UnrealHeaderTool，意思是虚幻引擎的头文件工具，主要负责解析各个头文件，并分析其中的有UCLASS()，USTRUCT()等前缀的类，以及UFUNCTION()等前缀的函数，并且把这些类与函数等信息通过生成(*.generate.h)等代码反射给蓝图使用
+
+完整编译流程:
+
+UBT收集目录中的*.cs文件，解析各种编译配置；然后UBT调用UHT分析需要分析的*.h文件，根据文件是否有UCLASS()，UFUNCTION（）等宏，来反射信息，并生成*.generated.h和*.gen.cpp文件；最后UBT调用MSBuild，将相关*.h/ *.cpp代码，以及生成的*.generated.h和*.gen.cpp一起编译。
+
+## 9 重要核心系统简介
+
+### 9.1 引擎初始化过程
+
+游戏初始化是由PreInit()预初始化，Init()两个步骤组成，然后是主循环的Tick()函数。最后是结束退出的Exit()函数。
+
+
+预初始化PreInit()：
+
+1. 设置路径：当前程序路径，当前工作目录路径，游戏的工程路径。
+2. 设置标准输出：设置GLog系统输出的设备，是输出到命令行还是何处。
+
+3. 并且也初始化了一部分系统
+  - 初始化游戏主线程GameThread，其实只是把当前线程设置为主线程
+  - 初始化随机数系统（随机数种子）
+  - 初始化TaskGraph任务系统，并按照当前平台的核心数量来设置TaskGraph的工作线程数量。同时也会启动一个专门的线程池，生成一堆线程，用于在需要的时候使用。也就是说虚幻引擎的线程数量是远多于核心数量的。
+
+4. 在完成这些之后，会调用LoadCoreModules。目前所谓的CoreModules指的就是CoreUObject。
+5. 随后，所有的PreInitModules会被启动起来。这些强大的模块是：引擎模块、渲染模块、动画蓝图、Slate渲染模块、Slate核心模块、贴图压缩模块和地形模块。
+6. 当这些模块加载完毕后，AppInit函数会被调用，进入引擎正式的初始化阶段
+
+初始化Init():
+
+在进入初始化流程时，所有被加载到内存的模块，如果有PostEngineInit函数的，都会调用从而初始化。这一过程借助IProjectManager完成的。
+
+主循环:
+循环引擎的主循环代码大致如下：
+```cpp
+while (!GIsRequestingExit)
+{
+  EngineTick();
+}
+```
+
+### 9.2 并行与并发
+
+TaskGraph系统
+
+虚幻引擎有一个更为现代的多线程框架，基于Task思想，对线程进行复用的系统，就是TaskGraph系统。因为频繁创建与销毁线程的代码略大，而且很多时候我们创建线程又是临时的，我们可以把需要执行的“指令”和数据封成一个包，然后交给TaskGraph系统。TaskGraph系统会选择合适的空闲线程对这个任务进行执行。
+
+https://zhuanlan.zhihu.com/p/574216210
+
+首先TaskGraph是UE中基于任务的并发机制。可以创建任务在指定类型的线程中执行，同时提供了等待机制，其强大之处在于可以调度一系列有依赖关系的任务，这些任务组成了一个有向无环的任务网络（DAG），并且任务的执行可以分布在不同的线程中。
+
+https://zhuanlan.zhihu.com/p/578687893
+
+## 10 对象模型
+
