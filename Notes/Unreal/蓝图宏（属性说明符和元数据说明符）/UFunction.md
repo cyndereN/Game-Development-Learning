@@ -137,6 +137,6 @@ void ACountDown::Settest_IntVal_T(int32 val)
 
 ### 蓝图中用法
 
-首先 创建蓝图类 BP_Countdown 继承C++ Countdown类，然后在蓝图图中对CountdownHasFinished 函数覆盖进行补充或替换。这里复写时蓝图调用了父类的同名函数，即C++中定义的 CountdownHasFinished_Implementation 函数
+首先 创建蓝图类 BP_Countdown 继承C++ Countdown类，然后在蓝图中对CountdownHasFinished 函数覆盖进行补充或替换。这里复写时蓝图调用了父类的同名函数，即C++中定义的 CountdownHasFinished_Implementation 函数
 
 ![](./5.png)
