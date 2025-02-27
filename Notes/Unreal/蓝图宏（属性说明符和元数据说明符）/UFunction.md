@@ -90,7 +90,7 @@ P.S.
 
 ![](./4.png)
 
-lueprintNativeEvent 函数与 BlueprintCallable 和 BlueprintImplementableEvent 函数的组合类似。其具备用C++中编程的默认行为，但此类行为可通过在蓝图图表中覆盖进行补充或替换。对此类代码编程时，C++代码固定使用命名末尾添加了_Implementation的虚拟函数，如下所示。此为最为灵活的选项，因此本教程将采用这种方法。
+BlueprintNativeEvent 函数与 BlueprintCallable 和 BlueprintImplementableEvent 函数的组合类似。其具备用C++中编程的默认行为，但此类行为可通过在蓝图图表中覆盖进行补充或替换。对此类代码编程时，C++代码固定使用命名末尾添加了_Implementation的虚拟函数，如下所示。此为最为灵活的选项，因此本教程将采用这种方法。
 
 ### C++ Blueprint Native Event 例子
 
