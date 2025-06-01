@@ -172,7 +172,7 @@ Mono的编译器负责生成符合公共语言规范的映射代码，即公共�
 它是一种属于通用语言架构和.NET框架的低阶的人类可读的编程语言。
 CIL类似一个面向对象的汇编语言，并且它是完全基于堆栈的，它运行在虚拟机上（.Net Framework, Mono VM）的语言。
 
-![Run_C#](./assets/Compile_C#.jpg)
+![Run_C#](./assets/Compile_CS.jpg)
 
 工作流程：
 1. 通过C#编译器mcs，将C#编译为***IL***（byte code）  
