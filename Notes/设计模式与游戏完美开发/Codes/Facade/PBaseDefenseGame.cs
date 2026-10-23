@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PBaseDefenseGame
 {
+	// 作为mediator
 	//------------------------------------------------------------------------
 	// Singleton模版
 	private static PBaseDefenseGame _instance;
