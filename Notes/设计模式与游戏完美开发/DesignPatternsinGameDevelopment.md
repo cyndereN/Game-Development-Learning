@@ -125,4 +125,23 @@ Unityu提供了不少系统的facade接口，例如物理引擎、渲染、粒�
 
 - 其他应用方式：角色与载具；角色与法术类群组
 
-## 
+## 策略模式 Strategy
+
+定义一组算法，并且封装每个算法让他们可以彼此交换使用。策略模式让这些算法在客户端使用它们时能更加独立
+
+### 说明
+
+- Strategy: 提供“策略客户端”可以使用的方法
+- ConcreteStrategyA~C： 不同算法实现
+- Context： 拥有一个Strategy类的对象引用
+
+### 优缺点
+
+- 角色属性变得更好维护（ICharacterAttr）
+- 不必再针对角色类型编写程序代码（ICharacter使用ICharacterAttr）
+- 计算公式替代更为方便
+
+注意：
+InitAttr时，// 是否為士兵類別
+SoldierAttr theSoldierAttr = CharacterAttr as SoldierAttr;
+其实违反了LSP原则
