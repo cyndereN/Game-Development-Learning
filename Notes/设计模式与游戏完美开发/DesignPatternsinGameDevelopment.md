@@ -145,3 +145,16 @@ Unityu提供了不少系统的facade接口，例如物理引擎、渲染、粒�
 InitAttr时，// 是否為士兵類別
 SoldierAttr theSoldierAttr = CharacterAttr as SoldierAttr;
 其实违反了LSP原则
+
+## 模板方法 Template Method
+
+在一个操作方法中定义算法的流程，其中某些步骤有子类完成。模板方法模式让子类在不变更原有算法流程的情况下，还能够重新定义其中的步骤
+
+## 敌人AI状态模式 State
+
+减少错误发生以及降低维护的难度
+
+状态执行环境单一化
+
+
+# 第三章 角色的产生
